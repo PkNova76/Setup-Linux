@@ -125,7 +125,7 @@ function Networking_Logging {
         cd ~/lab/chainsaw/ && \
                 sudo cp chainsaw /usr/bin/chainsaw && sudo chmod +x /usr/bin/chainsaw
         writeToLog $? "INSTALL CHAINSAW"
-        pip3 install --upgrade pip
+        python3 -m pip install --upgrade pip
         python3 -m pip install sigma-cli
         writeToLog $? "PIP3 - sigma-cli"
 }
@@ -326,6 +326,15 @@ function Misc {
         echo -e "# Options to fzf command\nexport FZF_COMPLETION_OPTS='--border --info=inline'" >> ~/.fzf.zsh
         writeToLog $? "SET FZF OPTIONS"
         cat >> ~/.fzf.zsh << 'EOF'
+# Use ~~ as the trigger sequence instead of the default **
+export FZF_COMPLETION_TRIGGER='~~'
+
+# Options to fzf command
+export FZF_COMPLETION_OPTS='--border --info=inline'
+
+# Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
 _fzf_comprun() {
 local command=$1
 shift
@@ -411,13 +420,13 @@ function Main {
                 echo -e ${RED}"The script has already been run."
                 read -p "Do you want to reinstall the tools? (y/n): " choice
 
-        if [[ $choice == "y" || $choice == "Y" ]]; then
-                prompt_reinstall
-                exit 0
-        else
-                echo "Reinstallation cancelled."
-                exit 0
-        fi
+                if [[ $choice == "y" || $choice == "Y" ]]; then
+                        prompt_reinstall
+                        exit 0
+                else
+                        echo "Reinstallation cancelled."
+                        exit 0
+                fi
         else
                 sudo apt update && sudo apt upgrade -y
                 SHELL_RC_FILE="$HOME/.$(echo $SHELL | awk -F '/' '{print $NF}')"rc
