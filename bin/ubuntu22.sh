@@ -299,6 +299,33 @@ function Misc {
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
         sed -i "/^plugins=/cplugins=(git aliases colorize colored-man-pages copypath encode64 zoxide zsh-autosuggestions zsh-syntax-highlighting)" ~/.zshrc
+        echo "ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste up-line-or-search down-line-or-search expand-or-complete accept-line push-line-or-edit)" >> ~/.zshrc
+        writeToLog $? "INSTALL ZSH AUTOSUGGESTION, SYNTAX HIGHLIGHT AND CONFIGURE THEM"
+
+        #Install fzf
+        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        writeToLog $? "CLONING FZF"
+        ~/.fzf/install --all
+        writeToLog $? "INSTALL FZF"
+
+        echo -e "# Use ~~ as the trigger sequence instead of the default **\nexport FZF_COMPLETION_TRIGGER='~~'" >> ~/.fzf.zsh
+        writeToLog $? "SET FZF TRIGGER SEQUENCE"
+        echo -e "# Options to fzf command\nexport FZF_COMPLETION_OPTS='--border --info=inline'" >> ~/.fzf.zsh
+        writeToLog $? "SET FZF OPTIONS"
+        cat >> ~/.fzf.zsh << 'EOF'
+_fzf_comprun() {
+local command=$1
+shift
+
+case "$command" in
+        cd)           fzf --preview 'tree -C {} | head -200'   "$@" ;;
+        export|unset) fzf --preview "eval 'echo \$'{}"         "$@" ;;
+        ssh)          fzf --preview 'dig {}'                   "$@" ;;
+        *)            fzf --preview 'bat -n --color=always {}' "$@" ;;
+        esac
+}
+EOF
+        writeToLog $? "APPEND FZF CONFIG TO ~/.fzf.zsh"
 }
 
 function EditGrub {
