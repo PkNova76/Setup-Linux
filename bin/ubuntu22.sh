@@ -303,6 +303,42 @@ function Misc {
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
         sed -i "/^plugins=/cplugins=(git aliases colorize colored-man-pages copypath encode64 zoxide zsh-autosuggestions zsh-syntax-highlighting)" ~/.zshrc
+        echo "ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste up-line-or-search down-line-or-search expand-or-complete accept-line push-line-or-edit)" >> ~/.zshrc
+        writeToLog $? "INSTALL ZSH AUTOSUGGESTION, SYNTAX HIGHLIGHT AND CONFIGURE THEM"
+
+        #Install fzf
+        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        writeToLog $? "CLONING FZF"
+        ~/.fzf/install --all
+        writeToLog $? "INSTALL FZF"
+
+        echo -e "# Use ~~ as the trigger sequence instead of the default **\nexport FZF_COMPLETION_TRIGGER='~~'" >> ~/.fzf.zsh
+        writeToLog $? "SET FZF TRIGGER SEQUENCE"
+        echo -e "# Options to fzf command\nexport FZF_COMPLETION_OPTS='--border --info=inline'" >> ~/.fzf.zsh
+        writeToLog $? "SET FZF OPTIONS"
+        cat >> ~/.fzf.zsh << 'EOF'
+# Use ~~ as the trigger sequence instead of the default **
+export FZF_COMPLETION_TRIGGER='~~'
+
+# Options to fzf command
+export FZF_COMPLETION_OPTS='--border --info=inline'
+
+# Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
+_fzf_comprun() {
+local command=$1
+shift
+
+case "$command" in
+        cd)           fzf --preview 'tree -C {} | head -200'   "$@" ;;
+        export|unset) fzf --preview "eval 'echo \$'{}"         "$@" ;;
+        ssh)          fzf --preview 'dig {}'                   "$@" ;;
+        *)            fzf --preview 'bat -n --color=always {}' "$@" ;;
+        esac
+}
+EOF
+        writeToLog $? "APPEND FZF CONFIG TO ~/.fzf.zsh"
 }
 
 function EditGrub {
@@ -375,13 +411,13 @@ function Main {
                 echo -e ${RED}"The script has already been run."
                 read -p "Do you want to reinstall the tools? (y/n): " choice
 
-        if [[ $choice == "y" || $choice == "Y" ]]; then
-                prompt_reinstall
-                exit 0
-        else
-                echo "Reinstallation cancelled."
-                exit 0
-        fi
+                if [[ $choice == "y" || $choice == "Y" ]]; then
+                        prompt_reinstall
+                        exit 0
+                else
+                        echo "Reinstallation cancelled."
+                        exit 0
+                fi
         else
                 sudo apt update && sudo apt upgrade -y
                 SHELL_RC_FILE="$HOME/.$(echo $SHELL | awk -F '/' '{print $NF}')"rc
