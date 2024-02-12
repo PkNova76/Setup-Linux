@@ -108,13 +108,21 @@ function Networking_Logging {
         tar -xf elasticsearch-8.11.0-linux-x86_64.tar
         
         # Install chainsaw and sigma
-        cd ~/lab && \
-                wget https://github.com/WithSecureLabs/chainsaw/releases/download/v2.8.0/chainsaw_x86_64-unknown-linux-gnu.tar.gz
-        tar -xf chainsaw_x86_64-unknown-linux-gnu.tar
+        cd ~/lab
+        curl -s https://api.github.com/repos/WithSecureLabs/chainsaw/releases/latest \
+        | grep "chainsaw_x86_64-unknown-linux-gnu.tar.gz" \
+        | cut -d : -f 2,3 \
+        | tr -d \" \
+        | wget -qi -
+        writeToLog $? "DOWNLOAD CHAINSAW"
+        tar -xf chainsaw_x86_64-unknown-linux-gnu.tar.gz
+        writeToLog $? "EXTRACT CHAINSAW"
         cd ~/lab/chainsaw/ && \
                 sudo cp chainsaw /usr/bin/chainsaw && sudo chmod +x /usr/bin/chainsaw
+        writeToLog $? "INSTALL CHAINSAW"
         pip3 install --upgrade pip
         python3 -m pip install sigma-cli
+        writeToLog $? "PIP3 - sigma-cli"
 }
 
 function FileAnalizing {
