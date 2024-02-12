@@ -120,7 +120,7 @@ function Networking_Logging {
         cd ~/lab/chainsaw/ && \
                 sudo cp chainsaw /usr/bin/chainsaw && sudo chmod +x /usr/bin/chainsaw
         writeToLog $? "INSTALL CHAINSAW"
-        pip3 install --upgrade pip
+        python3 -m pip install --upgrade pip
         python3 -m pip install sigma-cli
         writeToLog $? "PIP3 - sigma-cli"
 }
