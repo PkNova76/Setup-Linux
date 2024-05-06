@@ -33,6 +33,11 @@ function Dependencies {
                 writeToLog $? "APT - $package"
         done
         sudo apt update && sudo apt upgrade -y
+
+        #Install Rust
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source "$HOME/.cargo/env"
+        writeToLog $? "Install Rust"
 }
 
 function Memory {
