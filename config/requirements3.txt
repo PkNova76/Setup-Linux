@@ -18,3 +18,7 @@ pyshark
 pipx
 pyinstaller
 uncompyle6
+python-evtx
+stream-sqlite
+striprtf
+olefile
