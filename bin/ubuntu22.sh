@@ -136,7 +136,7 @@ function Networking_Logging {
         cd ~/lab/chainsaw/ && \
                 sudo cp chainsaw /usr/bin/chainsaw && sudo chmod +x /usr/bin/chainsaw
         writeToLog $? "INSTALL CHAINSAW"
-        cd ~/lab/chainsaw && \
+        cd ~/lab/ && \
                 git clone https://github.com/SigmaHQ/sigma.git
         python3 -m pip install --upgrade pip
         python3 -m pip install sigma-cli
