@@ -59,10 +59,21 @@ function Memory {
         writeToLog $? "Volatility 3"
         
         # Install Volatility's plugin
+
+        ## Volatility 2 plugins
         git clone https://github.com/superponible/volatility-plugins.git
         cp ~/lab/volatility-plugins/* ~/.local/lib/python2.7/site-packages/volatility/plugins/
+        writeToLog $? "Install Vol2 plugins"
+
+        ## Volatility 3 plugins
         git clone https://github.com/kudelskisecurity/volatility-gpg.git
         cp ~/lab/volatility-gpg/linux/* ~/.local/lib/python3.10/site-packages/volatility3/framework/plugins/linux/
+        git clone https://github.com/forensicxlab/volatility3_plugins.git
+        cp ~/lab/volatility3_plugins/* ~/.local/lib/python3.10/site-packages/volatility3/framework/plugins/windows/
+        writeToLog $? "Install Vol3 plugins"
+
+
+        # Volatility 3 profile
         git clone https://github.com/volatilityfoundation/volatility.git
         
         # Install AVML and LiME
@@ -110,7 +121,7 @@ function Networking_Logging {
         # Install chainsaw and sigma
         cd ~/lab
         curl -s https://api.github.com/repos/WithSecureLabs/chainsaw/releases/latest \
-        | grep "chainsaw_x86_64-unknown-linux-gnu.tar.gz" \
+        | grep "browser_download_url.*chainsaw_x86_64-unknown-linux-gnu.tar.gz" \
         | cut -d : -f 2,3 \
         | tr -d \" \
         | wget -qi -
@@ -120,6 +131,8 @@ function Networking_Logging {
         cd ~/lab/chainsaw/ && \
                 sudo cp chainsaw /usr/bin/chainsaw && sudo chmod +x /usr/bin/chainsaw
         writeToLog $? "INSTALL CHAINSAW"
+        cd ~/lab/ && \
+                git clone https://github.com/SigmaHQ/sigma.git
         python3 -m pip install --upgrade pip
         python3 -m pip install sigma-cli
         writeToLog $? "PIP3 - sigma-cli"
@@ -136,6 +149,7 @@ function FileAnalizing {
                 git clone https://github.com/jesparza/peepdf.git
         cd peepdf/ && \
                 sed -i '1i#!/usr/bin/python2.7' peepdf.py
+        
 }
 
 function Stego_Osint {
@@ -259,8 +273,8 @@ function Misc {
         # Install something funny
         cd ~/lab && \
                 git clone https://github.com/TheDarkBug/uwufetch.git && cd uwufetch
-        make build
-        sudo make install
+                make build
+                sudo make install
         SNAP_PACKAGES=(
                 ngrok dive pycdc pyinstxtractor
         )
@@ -347,6 +361,13 @@ case "$command" in
 }
 EOF
         writeToLog $? "APPEND FZF CONFIG TO ~/.fzf.zsh"
+
+        # Install Chepy
+        cd ~/lab && \
+                git clone --recursive https://github.com/securisec/chepy.git
+                cd chepy
+                python3 -m pip install -e .
+        writeToLog $? "INSTALL CHEPY"
 }
 
 function EditGrub {
