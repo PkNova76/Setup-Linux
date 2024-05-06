@@ -33,11 +33,6 @@ function Dependencies {
                 writeToLog $? "APT - $package"
         done
         sudo apt update && sudo apt upgrade -y
-
-        #Install Rust
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        source "$HOME/.cargo/env"
-        writeToLog $? "Install Rust"
 }
 
 function Memory {
@@ -306,6 +301,10 @@ function Misc {
         #Install oh-my-zsh
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
         writeToLog $? "DOWNLOAD AND INSTALL OH-MY-ZSH"
+        curl https://gist.githubusercontent.com/PkNova76/6823ebad7e7d246a4bb0a0d7e0f7ca60/raw/e477aee406ea64013acfe64263a515980dfa25ae/pknova.zsh-theme -o ~/.oh-my-zsh/themes/pknova.zsh-theme
+        writeToLog $? "DOWNLOAD My Theme"
+        sed -i "/^ZSH_THEME=/cZSH_THEME=\"pknova\"" ~/.zshrc
+        writeToLog $? "SET MY THEME"
 
         #Install zsh plugins
         git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
